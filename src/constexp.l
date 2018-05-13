@@ -22,7 +22,7 @@
 
 #include "constexp.h"  
 #include "cppvalue.h"
-#include "ce_parse.h" // generated header file
+#include "ce_parse.hpp" // generated header file
 #include "message.h"
 
 #define YY_NO_INPUT 1
