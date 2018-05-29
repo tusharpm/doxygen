@@ -48,31 +48,11 @@ if (NOT Qt5Core_FOUND)
   include(${QT_USE_FILE})
 endif()
 
-# generate settings.h
-file(GENERATE OUTPUT ${GENERATED_SRC_WIZARD}/settings.h
-CONTENT "#ifndef SETTINGS_H
-#define SETTINGS_H
-#define USE_SQLITE3 ${sqlite3}
-#define USE_LIBCLANG ${clang}
-#define IS_SUPPORTED(x) \\
-  ((USE_SQLITE3  && strcmp(\"USE_SQLITE3\",(x))==0)  || \\
-   (USE_LIBCLANG && strcmp(\"USE_LIBCLANG\",(x))==0) || \\
-  0)
-#endif" )
-set_source_files_properties(${GENERATED_SRC_WIZARD}/settings.h PROPERTIES GENERATED 1)
-
-# generate version.cpp
-file(GENERATE OUTPUT ${GENERATED_SRC_WIZARD}/version.cpp
-    CONTENT "char versionString[]=\"${VERSION}\";"
-)
-set_source_files_properties(${GENERATED_SRC_WIZARD}/version.cpp PROPERTIES GENERATED 1)
-
 # generate configdoc.cpp
 add_custom_command(
 COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/configgen.py -wiz ${CMAKE_SOURCE_DIR}/src/config.xml > ${GENERATED_SRC_WIZARD}/configdoc.cpp
 OUTPUT ${GENERATED_SRC_WIZARD}/configdoc.cpp
 )
-set_source_files_properties(${GENERATED_SRC_WIZARD}/configdoc.cpp PROPERTIES GENERATED 1)
 
 FLEX_TARGET(config_doxyw config_doxyw.l ${GENERATED_SRC_WIZARD}/config_doxyw.cpp COMPILE_FLAGS "${LEX_FLAGS}")
 
@@ -97,8 +77,8 @@ inputbool.cpp
 inputstring.cpp
 inputint.cpp
 inputstrlist.cpp
-${GENERATED_SRC_WIZARD}/settings.h
-${GENERATED_SRC_WIZARD}/version.cpp
+${GENERATED_SRC}/settings.h
+${GENERATED_SRC}/version.cpp
 ${GENERATED_SRC_WIZARD}/config_doxyw.cpp
 ${GENERATED_SRC_WIZARD}/configdoc.cpp
 ${doxywizard_MOC}

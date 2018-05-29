@@ -17,44 +17,20 @@ file(GLOB LANGUAGE_FILES "${CMAKE_SOURCE_DIR}/src/translator_??.h")
 add_definitions(-DYY_BUF_SIZE=262144 -DYY_READ_BUF_SIZE=262144)
 
 # generate settings.h
-file(GENERATE OUTPUT ${GENERATED_SRC}/settings.h
-CONTENT "#ifndef SETTINGS_H
-#define SETTINGS_H
-#define USE_SQLITE3 ${sqlite3}
-#define USE_LIBCLANG ${clang}
-#define IS_SUPPORTED(x) \\
-  ((USE_SQLITE3  && strcmp(\"USE_SQLITE3\",(x))==0)  || \\
-   (USE_LIBCLANG && strcmp(\"USE_LIBCLANG\",(x))==0) || \\
-  0)
-#endif" )
-set_source_files_properties(${GENERATED_SRC}/settings.h PROPERTIES GENERATED 1)
-
+configure_file(settings.h.in ${GENERATED_SRC}/settings.h)
 
 # generate version.cpp
-file(GENERATE OUTPUT ${GENERATED_SRC}/version.cpp
-    CONTENT "char versionString[]=\"${VERSION}\";"
+file(WRITE ${GENERATED_SRC}/version.cpp
+    "char versionString[]=\"${VERSION}\";"
 )
-set_source_files_properties(${GENERATED_SRC}/version.cpp PROPERTIES GENERATED 1)
 
-# configvalues.h
+# configvalues.h, configvalues.cpp, configoptions.cpp
 add_custom_command(
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/configgen.py -maph ${CMAKE_SOURCE_DIR}/src/config.xml > ${GENERATED_SRC}/configvalues.h
-    DEPENDS ${CMAKE_SOURCE_DIR}/src/config.xml ${CMAKE_SOURCE_DIR}/src/configgen.py
-    OUTPUT ${GENERATED_SRC}/configvalues.h
-)
-
-# configvalues.cpp
-add_custom_command(
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/configgen.py -maps ${CMAKE_SOURCE_DIR}/src/config.xml > ${GENERATED_SRC}/configvalues.cpp
-    DEPENDS ${CMAKE_SOURCE_DIR}/src/config.xml ${CMAKE_SOURCE_DIR}/src/configgen.py
-    OUTPUT ${GENERATED_SRC}/configvalues.cpp
-)
-
-# configoptions.cpp
-add_custom_command(
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/configgen.py -cpp ${CMAKE_SOURCE_DIR}/src/config.xml > ${GENERATED_SRC}/configoptions.cpp
     DEPENDS ${CMAKE_SOURCE_DIR}/src/config.xml ${CMAKE_SOURCE_DIR}/src/configgen.py
-    OUTPUT ${GENERATED_SRC}/configoptions.cpp
+    OUTPUT ${GENERATED_SRC}/configvalues.h ${GENERATED_SRC}/configvalues.cpp ${GENERATED_SRC}/configoptions.cpp
 )
 
 # lang_cfg.h
